@@ -149,48 +149,66 @@ public class CBO implements CKASTVisitor, ClassLevelMetric, MethodLevelMetric {
 	}
 
 	private void coupleTo(Type type) {
-		if(type==null)
-			return;
+    	if (type == null) return;
 
 		ITypeBinding resolvedBinding = type.resolveBinding();
-		if(resolvedBinding!=null)
+		if (resolvedBinding != null) {
 			coupleTo(resolvedBinding);
-		else {
-			if(type instanceof SimpleType) {
-				SimpleType castedType = (SimpleType) type;
-				addToSet(castedType.getName().getFullyQualifiedName());
-			}
-			else if(type instanceof QualifiedType) {
-				QualifiedType castedType = (QualifiedType) type;
-				addToSet(castedType.getName().getFullyQualifiedName());
-			}
-			else if(type instanceof NameQualifiedType) {
-				NameQualifiedType castedType = (NameQualifiedType) type;
-				addToSet(castedType.getName().getFullyQualifiedName());
-			}
-			else if(type instanceof ParameterizedType) {
-				ParameterizedType castedType = (ParameterizedType) type;
-				coupleTo(castedType.getType());
-			}
-			else if(type instanceof WildcardType) {
-				WildcardType castedType = (WildcardType) type;
-				coupleTo(castedType.getBound());
-			}
-			else if(type instanceof ArrayType) {
-				ArrayType castedType = (ArrayType) type;
-				coupleTo(castedType.getElementType());
-			}
-			else if(type instanceof IntersectionType) {
-				IntersectionType castedType = (IntersectionType) type;
-				List<Type> types = castedType.types();
-				types.stream().forEach(x -> coupleTo(x));
-			}
-			else if(type instanceof UnionType) {
-				UnionType castedType = (UnionType) type;
-				List<Type> types = castedType.types();
-				types.stream().forEach(x -> coupleTo(x));
-			}
+		} else {
+			handleType(type);
 		}
+	}
+
+	private void handleType(Type type) {
+		if (type instanceof SimpleType) {
+			handleSimpleType((SimpleType) type);
+		} else if (type instanceof QualifiedType) {
+			handleQualifiedType((QualifiedType) type);
+		} else if (type instanceof NameQualifiedType) {
+			handleNameQualifiedType((NameQualifiedType) type);
+		} else if (type instanceof ParameterizedType) {
+			handleParameterizedType((ParameterizedType) type);
+		} else if (type instanceof WildcardType) {
+			handleWildcardType((WildcardType) type);
+		} else if (type instanceof ArrayType) {
+			handleArrayType((ArrayType) type);
+		} else if (type instanceof IntersectionType) {
+			handleIntersectionType((IntersectionType) type);
+		} else if (type instanceof UnionType) {
+			handleUnionType((UnionType) type);
+		}
+	}
+
+	private void handleSimpleType(SimpleType type) {
+		addToSet(type.getName().getFullyQualifiedName());
+	}
+
+	private void handleQualifiedType(QualifiedType type) {
+		addToSet(type.getName().getFullyQualifiedName());
+	}
+
+	private void handleNameQualifiedType(NameQualifiedType type) {
+		addToSet(type.getName().getFullyQualifiedName());
+	}
+
+	private void handleParameterizedType(ParameterizedType type) {
+		coupleTo(type.getType());
+	}
+
+	private void handleWildcardType(WildcardType type) {
+		coupleTo(type.getBound());
+	}
+
+	private void handleArrayType(ArrayType type) {
+		coupleTo(type.getElementType());
+	}
+
+	private void handleIntersectionType(IntersectionType type) {
+		type.types().forEach(this::coupleTo);
+	}
+
+	private void handleUnionType(UnionType type) {
+		type.types().forEach(this::coupleTo);
 	}
 
 	private void coupleTo(SimpleName name) {
