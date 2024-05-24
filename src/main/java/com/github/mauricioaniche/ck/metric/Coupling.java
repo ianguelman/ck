@@ -164,26 +164,27 @@ public class Coupling implements CKASTVisitor, ClassLevelMetric, MethodLevelMetr
 	}
 
 	public void visit(ParameterizedType node) {
-		if(this.className != null) {
+		if(this.className == null) {
+      return;
+    }
 			
-			try {	
-				ITypeBinding binding = node.resolveBinding();
-				if (binding != null) {
-		
-					coupleTo(binding);
-		
-					for (ITypeBinding types : binding.getTypeArguments()) {
-						coupleTo(types);
-					}
-				} else {
-					coupleTo(node.getType());
-				}
-			} catch (NullPointerException e) {
-				// TODO: handle exception
-			}
-		}
+    try {	
+      ITypeBinding binding = node.resolveBinding();
+      if (binding != null) {
+  
+        coupleTo(binding);
+  
+        for (ITypeBinding types : binding.getTypeArguments()) {
+          coupleTo(types);
+        }
+      } else {
+        coupleTo(node.getType());
+      }
+    } catch (NullPointerException e) {
+      // TODO: handle exception
+    }
+  }
 
-	}
 	private void coupleTo(Annotation type) {
 		if(this.className != null) {
 			ITypeBinding resolvedType = type.resolveTypeBinding();
