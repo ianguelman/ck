@@ -149,66 +149,47 @@ public class CBO implements CKASTVisitor, ClassLevelMetric, MethodLevelMetric {
 	}
 
 	private void coupleTo(Type type) {
-    	if (type == null) return;
-
+		if (type == null)
+			return;
+	
 		ITypeBinding resolvedBinding = type.resolveBinding();
-		if (resolvedBinding != null) {
+		if (resolvedBinding != null)
 			coupleTo(resolvedBinding);
-		} else {
-			handleType(type);
-		}
-	}
-
-	private void handleType(Type type) {
-		if (type instanceof SimpleType) {
-			handleSimpleType((SimpleType) type);
-		} else if (type instanceof QualifiedType) {
-			handleQualifiedType((QualifiedType) type);
-		} else if (type instanceof NameQualifiedType) {
-			handleNameQualifiedType((NameQualifiedType) type);
-		} else if (type instanceof ParameterizedType) {
-			handleParameterizedType((ParameterizedType) type);
+		else
+			addToSet(getFullyQualifiedName(type));
+	
+		if (type instanceof ParameterizedType) {
+			ParameterizedType castedType = (ParameterizedType) type;
+			coupleTo(castedType.getType());
 		} else if (type instanceof WildcardType) {
-			handleWildcardType((WildcardType) type);
+			WildcardType castedType = (WildcardType) type;
+			coupleTo(castedType.getBound());
 		} else if (type instanceof ArrayType) {
-			handleArrayType((ArrayType) type);
-		} else if (type instanceof IntersectionType) {
-			handleIntersectionType((IntersectionType) type);
-		} else if (type instanceof UnionType) {
-			handleUnionType((UnionType) type);
+			ArrayType castedType = (ArrayType) type;
+			coupleTo(castedType.getElementType());
+		} else if (type instanceof IntersectionType || type instanceof UnionType) {
+			List<Type> types;
+			if (type instanceof IntersectionType) {
+				IntersectionType castedType = (IntersectionType) type;
+				types = castedType.types();
+			} else {
+				UnionType castedType = (UnionType) type;
+				types = castedType.types();
+			}
+			types.forEach(this::coupleTo);
 		}
 	}
-
-	private void handleSimpleType(SimpleType type) {
-		addToSet(type.getName().getFullyQualifiedName());
-	}
-
-	private void handleQualifiedType(QualifiedType type) {
-		addToSet(type.getName().getFullyQualifiedName());
-	}
-
-	private void handleNameQualifiedType(NameQualifiedType type) {
-		addToSet(type.getName().getFullyQualifiedName());
-	}
-
-	private void handleParameterizedType(ParameterizedType type) {
-		coupleTo(type.getType());
-	}
-
-	private void handleWildcardType(WildcardType type) {
-		coupleTo(type.getBound());
-	}
-
-	private void handleArrayType(ArrayType type) {
-		coupleTo(type.getElementType());
-	}
-
-	private void handleIntersectionType(IntersectionType type) {
-		type.types().forEach(this::coupleTo);
-	}
-
-	private void handleUnionType(UnionType type) {
-		type.types().forEach(this::coupleTo);
+	
+	private String getFullyQualifiedName(Type type) {
+		if (type instanceof SimpleType) {
+			return ((SimpleType) type).getName().getFullyQualifiedName();
+		} else if (type instanceof QualifiedType) {
+			return ((QualifiedType) type).getName().getFullyQualifiedName();
+		} else if (type instanceof NameQualifiedType) {
+			return ((NameQualifiedType) type).getName().getFullyQualifiedName();
+		} else {
+			throw new IllegalArgumentException("Unsupported type: " + type.getClass().getSimpleName());
+		}
 	}
 
 	private void coupleTo(SimpleName name) {
