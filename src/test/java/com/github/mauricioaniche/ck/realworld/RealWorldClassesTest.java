@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.eclipse.jdt.core.dom.Modifier.isStatic;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class RealWorldClassesTest extends BaseTest {
@@ -34,10 +35,13 @@ public class RealWorldClassesTest extends BaseTest {
 
 		for (com.github.mauricioaniche.ck.CKMethodResult CKMethodResult : ck.getMethods()) {
 
+			assertFalse(CKMethodResult.getVariablesUsage().isEmpty(), "Variables usage map should not be empty");
+
 			for (Map.Entry<String, Integer> entry : CKMethodResult.getVariablesUsage().entrySet()) {
 				System.out.println("- variable: " + entry.getKey());
 			}
 		}
+		
 	}
 
 	// This class contains a method with a huge javadoc, and then the LOC was getting too big for
