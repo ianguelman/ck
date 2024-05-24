@@ -8,10 +8,11 @@ import java.io.IOException;
 import java.util.Map;
 
 public class ResultWriter {
+    private static final String CLASS = "class";
 
     private static final String[] CLASS_HEADER = {
             "file",
-            "class",
+            CLASS,
             "type",
 
             /* OO Metrics */
@@ -72,7 +73,7 @@ public class ResultWriter {
             "logStatementsQty"};
     private static final String[] METHOD_HEADER = { 
             "file", 
-            "class", 
+            CLASS, 
             "method", 
             "constructor", 
             "line", 
@@ -106,7 +107,7 @@ public class ResultWriter {
             "logStatementsQty", 
             "hasJavaDoc" };
                           
-    private static final String[] VAR_FIELD_HEADER = { "file", "class", "method", "variable", "usage" };
+    private static final String[] VAR_FIELD_HEADER = { "file", CLASS, "method", "variable", "usage" };
     private final boolean variablesAndFields;
 
     private CSVPrinter classPrinter;
