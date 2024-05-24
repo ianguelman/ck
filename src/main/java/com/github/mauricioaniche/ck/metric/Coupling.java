@@ -197,51 +197,55 @@ public class Coupling implements CKASTVisitor, ClassLevelMetric, MethodLevelMetr
 	}
 
 	private void coupleTo(Type type) {
-		if(type==null)
+		if(type==null || this.className == null) {
 			return;
+    }
 
-		if(this.className != null) {
-			ITypeBinding resolvedBinding = type.resolveBinding();
-			if(resolvedBinding!=null)
-				coupleTo(resolvedBinding);
-			else {
-				if(type instanceof SimpleType) {
-					SimpleType castedType = (SimpleType) type;
-					addToSet(castedType.getName().getFullyQualifiedName());
-				}
-				else if(type instanceof QualifiedType) {
-					QualifiedType castedType = (QualifiedType) type;
-					addToSet(castedType.getName().getFullyQualifiedName());
-				}
-				else if(type instanceof NameQualifiedType) {
-					NameQualifiedType castedType = (NameQualifiedType) type;
-					addToSet(castedType.getName().getFullyQualifiedName());
-				}
-				else if(type instanceof ParameterizedType) {
-					ParameterizedType castedType = (ParameterizedType) type;
-					coupleTo(castedType.getType());
-				}
-				else if(type instanceof WildcardType) {
-					WildcardType castedType = (WildcardType) type;
-					coupleTo(castedType.getBound());
-				}
-				else if(type instanceof ArrayType) {
-					ArrayType castedType = (ArrayType) type;
-					coupleTo(castedType.getElementType());
-				}
-				else if(type instanceof IntersectionType) {
-					IntersectionType castedType = (IntersectionType) type;
-					List<Type> types = castedType.types();
-					types.stream().forEach(x -> coupleTo(x));
-				}
-				else if(type instanceof UnionType) {
-					UnionType castedType = (UnionType) type;
-					List<Type> types = castedType.types();
-					types.stream().forEach(x -> coupleTo(x));
-				}
-			}
-		}
+    ITypeBinding resolvedBinding = type.resolveBinding();
+    if(resolvedBinding!=null) {
+      coupleTo(resolvedBinding);
+      return;
+    }
+      
+    handleCoupleToCasting(type);
 	}
+
+  private void handleCoupleToCasting(Type type) {
+    if(type instanceof SimpleType) {
+      SimpleType castedType = (SimpleType) type;
+      addToSet(castedType.getName().getFullyQualifiedName());
+    }
+    else if(type instanceof QualifiedType) {
+      QualifiedType castedType = (QualifiedType) type;
+      addToSet(castedType.getName().getFullyQualifiedName());
+    }
+    else if(type instanceof NameQualifiedType) {
+      NameQualifiedType castedType = (NameQualifiedType) type;
+      addToSet(castedType.getName().getFullyQualifiedName());
+    }
+    else if(type instanceof ParameterizedType) {
+      ParameterizedType castedType = (ParameterizedType) type;
+      coupleTo(castedType.getType());
+    }
+    else if(type instanceof WildcardType) {
+      WildcardType castedType = (WildcardType) type;
+      coupleTo(castedType.getBound());
+    }
+    else if(type instanceof ArrayType) {
+      ArrayType castedType = (ArrayType) type;
+      coupleTo(castedType.getElementType());
+    }
+    else if(type instanceof IntersectionType) {
+      IntersectionType castedType = (IntersectionType) type;
+      List<Type> types = castedType.types();
+      types.stream().forEach(x -> coupleTo(x));
+    }
+    else if(type instanceof UnionType) {
+      UnionType castedType = (UnionType) type;
+      List<Type> types = castedType.types();
+      types.stream().forEach(x -> coupleTo(x));
+    }
+  }
 
 	private void coupleTo(SimpleName name) {
 		if(this.className != null) {
