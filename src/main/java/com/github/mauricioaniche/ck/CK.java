@@ -24,6 +24,7 @@ public class CK {
 	private final boolean useJars;
 	
 	private static Logger log = Logger.getLogger(CK.class);
+	private static final String FOUND = "Found ";
 
 	Callable<List<ClassLevelMetric>> classLevelMetrics;
 	Callable<List<MethodLevelMetric>> methodLevelMetrics;
@@ -54,7 +55,7 @@ public class CK {
 
 	public void calculate(String path, CKNotifier notifier) {
 		String[] javaFiles = FileUtils.getAllJavaFiles(path);
-		log.info("Found " + javaFiles.length + " java files");
+		log.info(FOUND + javaFiles.length + " java files");
 
 		calculate(Paths.get(path), notifier,
 		 	Stream.of(javaFiles)
@@ -80,12 +81,12 @@ public class CK {
 	 */
 	public void calculate(Path path, CKNotifier notifier, Path... javaFilePaths) {
 		String[] srcDirs = FileUtils.getAllDirs(path.toString());
-		log.info("Found " + srcDirs.length + " src dirs");
+		log.info(FOUND + srcDirs.length + " src dirs");
 
 		String[] allDependencies = useJars ? FileUtils.getAllJars(path.toString()) : null;
 
 		if(useJars)
-			log.info("Found " + allDependencies.length + " jar dependencies");
+			log.info(FOUND + allDependencies.length + " jar dependencies");
 		
 		MetricsExecutor storage = new MetricsExecutor(classLevelMetrics, methodLevelMetrics, notifier);
 
