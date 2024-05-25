@@ -157,20 +157,18 @@ public class LOCCalculator {
 				}
 				if (endCommentPosition == line.length() - 2) {
 					return false;
-				} else {
-					String subString = line.substring(endCommentPosition + 2)
-							.trim();
-					if ("".equals(subString) || subString.indexOf("//") == 0) {
-						return false;
-					} else {
-						if (subString.startsWith("/*")) {
-							line = subString;
-							continue;
-						}
-						return true;
-					}
+				} 
+
+				String subString = line.substring(endCommentPosition + 2).trim();
+				if ("".equals(subString) || subString.indexOf("//") == 0) {
+					return false;
 				}
 
+				if (subString.startsWith("/*")) {
+					line = subString;
+					continue;
+				}
+				return true;
 			}
 		}
 		return isSourceCodeLine;
