@@ -148,10 +148,10 @@ public class LOCCalculator {
 	 * This method will work only if we are sure that comment has not already begun previously. Hence, this method should be called only after {@link #commentBegan(String)} is called
 	 */
 	private static boolean isSourceCodeLine(String line) {
-		boolean isSourceCodeLine = false;
 		line = line.trim();
-		if ("".equals(line) || line.startsWith("//")) {
-			return isSourceCodeLine;
+
+		if (isTrivialLine(line)) {
+			return false;
 		}
 
 		if (line.length() == 1) {
@@ -166,6 +166,7 @@ public class LOCCalculator {
 		while (line.length() > 0) {
 			line = line.substring(index + 2);
 			int endCommentPosition = line.indexOf("*/");
+
 			if (endCommentPosition < 0) {
 				return false;
 			}
@@ -176,7 +177,7 @@ public class LOCCalculator {
 
 			String subString = line.substring(endCommentPosition + 2).trim();
 			
-			if ("".equals(subString) || subString.indexOf("//") == 0) {
+			if (isTrivialLine(substring)) {
 				return false;
 			}
 
@@ -184,10 +185,10 @@ public class LOCCalculator {
 				line = subString;
 				continue;
 			}
+
 			return true;
 		}
 
-		return isSourceCodeLine;
+		return true;
 	}
-
 }
