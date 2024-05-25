@@ -56,26 +56,37 @@ public class LOCCalculator {
 
 		while ((line = bReader.readLine()) != null) {
 			line = line.trim();
-			if ("".equals(line) || line.startsWith("//")) {
+			if (isTrivialLine(line)) {
 				continue;
 			}
-			if (commentBegan) {
-				if (!commentEnded(line)) continue;
 
+			if (commentBegan && !commentEnded(line)) {
+				continue
+			}
+
+			if (commentBegan) {
 				line = line.substring(line.indexOf("*/") + 2).trim();
 				commentBegan = false;
-				if ("".equals(line) || line.startsWith("//")) {
-					continue;
-				}
 			}
+
+			if (isTrivialLine(line)) {
+				continue;
+			}
+
 			if (isSourceCodeLine(line)) {
 				count++;
 			}
+
 			if (commentBegan(line)) {
 				commentBegan = true;
 			}
 		}
+
 		return count;
+	}
+
+	private static boolean isTrivialLine(String line) {
+    	return ("".equals(line) || line.startsWith("//"));
 	}
 
 	/**
