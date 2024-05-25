@@ -148,29 +148,30 @@ public class LOCCalculator {
 		int index = line.indexOf("/*");
 		if (index != 0) {
 			return true;
-		} else {
-			while (line.length() > 0) {
-				line = line.substring(index + 2);
-				int endCommentPosition = line.indexOf("*/");
-				if (endCommentPosition < 0) {
-					return false;
-				}
-				if (endCommentPosition == line.length() - 2) {
-					return false;
-				} 
-
-				String subString = line.substring(endCommentPosition + 2).trim();
-				if ("".equals(subString) || subString.indexOf("//") == 0) {
-					return false;
-				}
-
-				if (subString.startsWith("/*")) {
-					line = subString;
-					continue;
-				}
-				return true;
-			}
 		}
+		
+		while (line.length() > 0) {
+			line = line.substring(index + 2);
+			int endCommentPosition = line.indexOf("*/");
+			if (endCommentPosition < 0) {
+				return false;
+			}
+			if (endCommentPosition == line.length() - 2) {
+				return false;
+			} 
+
+			String subString = line.substring(endCommentPosition + 2).trim();
+			if ("".equals(subString) || subString.indexOf("//") == 0) {
+				return false;
+			}
+
+			if (subString.startsWith("/*")) {
+				line = subString;
+				continue;
+			}
+			return true;
+		}
+
 		return isSourceCodeLine;
 	}
 
