@@ -60,14 +60,13 @@ public class LOCCalculator {
 				continue;
 			}
 			if (commentBegan) {
-				if (commentEnded(line)) {
-					line = line.substring(line.indexOf("*/") + 2).trim();
-					commentBegan = false;
-					if ("".equals(line) || line.startsWith("//")) {
-						continue;
-					}
-				} else
+				if (!commentEnded(line)) continue;
+
+				line = line.substring(line.indexOf("*/") + 2).trim();
+				commentBegan = false;
+				if ("".equals(line) || line.startsWith("//")) {
 					continue;
+				}
 			}
 			if (isSourceCodeLine(line)) {
 				count++;
