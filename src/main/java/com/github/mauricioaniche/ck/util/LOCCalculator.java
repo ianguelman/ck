@@ -61,7 +61,7 @@ public class LOCCalculator {
 			}
 
 			if (commentBegan && !commentEnded(line)) {
-				continue
+				continue;
 			}
 
 			if (commentBegan) {
@@ -177,7 +177,7 @@ public class LOCCalculator {
 
 			String subString = line.substring(endCommentPosition + 2).trim();
 			
-			if (isTrivialLine(substring)) {
+			if (isTrivialLine(subString)) {
 				return false;
 			}
 
